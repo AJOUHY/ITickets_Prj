@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">Espace Admin</h2>
+                        <p class="text-muted mb-0">Bienvenue, {{ app.user.firstName }} {{ app.user.lastName }}</p>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 bg-primary-subtle">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-primary fw-semibold">Ouverts</span>
+                                    <i class="bi bi-circle-fill text-primary"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ stats.OPENED ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 bg-warning-subtle">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-warning fw-semibold">En cours</span>
+                                    <i class="bi bi-hourglass-split text-warning"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ stats.IN_PROGRESS ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 bg-secondary-subtle">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-secondary fw-semibold">En attente</span>
+                                    <i class="bi bi-clock-history text-secondary"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ stats.PENDING ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 bg-success-subtle">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-success fw-semibold">Résolus</span>
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ stats.RESOLVED ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 bg-dark-subtle">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-dark fw-semibold">Fermés</span>
+                                    <i class="bi bi-lock-fill text-dark"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ stats.CLOSED ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+                    <h3 class="fw-bold mb-0">Gestion</h3>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="{{ path('app_admin_tickets_index') }}" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm h-100 bg-light">
+                                <div class="card-body d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <h5 class="fw-bold mb-1 text-dark">Gestion des tickets</h5>
+                                        <p class="text-muted mb-0">Consulter, filtrer et suivre les demandes</p>
+                                    </div>
+                                    <i class="bi bi-ticket-perforated fs-3 text-primary"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-md-6">
+                        <a href="{{ path('app_admin_users_index') }}" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm h-100 bg-light">
+                                <div class="card-body d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <h5 class="fw-bold mb-1 text-dark">Gestion des utilisateurs</h5>
+                                        <p class="text-muted mb-0">Créer, administrer et gérer les comptes</p>
+                                    </div>
+                                    <i class="bi bi-people-fill fs-3 text-primary"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

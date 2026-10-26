@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le statut{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Modifier le statut</h2>
+                <p class="text-muted mb-0">Ticket #{{ ticket.id }} - {{ ticket.titre }}</p>
+            </div>
+            <a href="{{ path('app_ticket_show_technicien', {'id': ticket.id}) }}" class="btn btn-outline-secondary">Retour</a>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="card-body p-4 p-md-5">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ form_row(form.status, {'attr': {'class': 'form-select'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

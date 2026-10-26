@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail du ticket{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Détail du ticket</h2>
+                <p class="text-muted mb-0">{{ ticket.titre }}</p>
+            </div>
+            <a href="{{ path('app_admin_tickets_index') }}" class="btn btn-outline-secondary">Retour</a>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="card-body p-4 p-md-5">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-4 bg-light-subtle h-100">
+                            <p class="text-muted mb-1 small fw-semibold">Client</p>
+                            <h5 class="fw-bold mb-0">{{ ticket.user.firstName }} {{ ticket.user.lastName }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-4 bg-light-subtle h-100">
+                            <p class="text-muted mb-1 small fw-semibold">Email</p>
+                            <h5 class="fw-bold mb-0">{{ ticket.user.email }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-4 bg-light-subtle h-100">
+                            <p class="text-muted mb-1 small fw-semibold">Type</p>
+                            <h5 class="fw-bold mb-0">{{ ticket.type.value }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-4 bg-light-subtle h-100">
+                            <p class="text-muted mb-1 small fw-semibold">Catégorie</p>
+                            <h5 class="fw-bold mb-0">{{ ticket.categorie.titre }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-4 bg-light-subtle h-100">
+                            <p class="text-muted mb-1 small fw-semibold">Urgence</p>
+                            {% set urgence = ticket.urgence.value %}
+                            {% if urgence == 'basse' %}
+                                <span class="badge rounded-pill px-3 py-2 fs-6 bg-success-subtle text-success-emphasis border border-success-subtle">{{ urgence }}</span>
+                            {% elseif urgence == 'moyenne' %}
+                                <span class="badge rounded-pill px-3 py-2 fs-6 bg-info-subtle text-info-emphasis border border-info-subtle">{{ urgence }}</span>
+                            {% elseif urgence == 'haute' %}
+                                <span class="badge rounded-pill px-3 py-2 fs-6 bg-warning-subtle text-warning-emphasis border border-warning-subtle">{{ urgence }}</span>
+                            {% else %}
+                                <span class="badge rounded-pill px-3 py-2 fs-6 bg-danger-subtle text-danger-emphasis border border-danger-subtle">{{ urgence }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-4 bg-light-subtle h-100">
+                            <p class="text-muted mb-1 small fw-semibold">Lieu</p>
+                            <h5 class="fw-bold mb-0">{{ ticket.lieu.value }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-4 bg-light-subtle h-100">
+                            <p class="text-muted mb-1 small fw-semibold">Statut</p>
+                            <h5 class="fw-bold mb-0">{{ ticket.status.value }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-4 bg-light-subtle h-100">
+                            <p class="text-muted mb-1 small fw-semibold">Date de création</p>
+                            <h5 class="fw-bold mb-0">{{ ticket.dateCreation|date('d/m/Y H:i') }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-4 bg-light-subtle h-100">
+                            <p class="text-muted mb-1 small fw-semibold">Affecté à</p>
+                            {% if ticket.affecteA %}
+                                <h5 class="fw-bold mb-0">{{ ticket.affecteA.firstName }} {{ ticket.affecteA.lastName }}</h5>
+                            {% else %}
+                                <h5 class="fw-bold mb-0 text-muted">Non affecté</h5>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top">
+                    <p class="text-muted mb-2 small fw-semibold">Description</p>
+                    <div class="border rounded-4 p-3 bg-light shadow-sm">{{ ticket.description }}</div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top">
+                    <p class="text-muted mb-2 small fw-semibold">Commentaires</p>
+
+                    {% if ticket.comments is empty %}
+                        <div class="alert alert-info mb-0">Aucun commentaire pour ce ticket.</div>
+                    {% else %}
+                        {% for comment in ticket.comments %}
+                            <div class="border rounded-4 p-3 mb-3 bg-light-subtle">
+                                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                    <strong>{{ comment.user.firstName }} {{ comment.user.lastName }}</strong>
+                                    <small class="text-muted">{{ comment.dateCreation|date('d/m/Y H:i') }}</small>
+                                </div>
+                                <p class="mb-0">{{ comment.message }}</p>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

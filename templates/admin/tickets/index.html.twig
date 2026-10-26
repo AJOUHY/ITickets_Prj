@@ -1,0 +1,174 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des tickets{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Gestion des tickets</h2>
+                <p class="text-muted mb-0">Filtrer, rechercher et gérer les demandes support.</p>
+            </div>
+            <a href="{{ path('app_dashboard_admin') }}" class="btn btn-outline-secondary">Retour au dashboard</a>
+        </div>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Statut</label>
+                        <select id="status" name="status" class="form-select">
+                            <option value="">Tous</option>
+                            {% for value, label in statuses %}
+                                <option value="{{ value }}" {{ selectedStatus == value ? 'selected' : '' }}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="createdBy" class="form-label">Créé par</label>
+                        <input type="text" id="createdBy" name="createdBy" value="{{ createdBy ?? '' }}" class="form-control" placeholder="Nom, prénom ou email">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="dateFrom" class="form-label">Du</label>
+                        <input type="date" id="dateFrom" name="dateFrom" value="{{ dateFrom ?? '' }}" class="form-control">
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="dateTo" class="form-label">Au</label>
+                        <input type="date" id="dateTo" name="dateTo" value="{{ dateTo ?? '' }}" class="form-control">
+                    </div>
+
+                    <div class="col-md-2 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                        <a href="{{ path('app_admin_tickets_index') }}" class="btn btn-outline-secondary">Reset</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Titre</th>
+                                <th>Type</th>
+                                <th>Urgence</th>
+                                <th>Catégorie</th>
+                                <th>Créé par</th>
+                                <th>Statut</th>
+                                <th>Affété à</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if tickets is empty %}
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted py-4">Aucun ticket trouvé.</td>
+                                </tr>
+                            {% else %}
+                                {% for ticket in tickets %}
+                                    <tr>
+                                        <td>#{{ ticket.id }}</td>
+                                        <td>
+                                            {% set title = ticket.titre|default('') %}
+                                            {% if title|length > 40 %}
+                                                {{ title|slice(0, 40) ~ '...' }}
+                                            {% else %}
+                                                {{ title }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ ticket.type.value }}</td>
+                                        <td>
+                                            {% set urgence = ticket.urgence.value %}
+                                            {% if urgence == 'basse' %}
+                                                <span class="badge bg-success-subtle text-success-emphasis">{{ urgence }}</span>
+                                            {% elseif urgence == 'moyenne' %}
+                                                <span class="badge bg-info-subtle text-info-emphasis">{{ urgence }}</span>
+                                            {% elseif urgence == 'haute' %}
+                                                <span class="badge bg-warning-subtle text-warning-emphasis">{{ urgence }}</span>
+                                            {% else %}
+                                                <span class="badge bg-danger-subtle text-danger-emphasis">{{ urgence }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ ticket.categorie.titre }}</td>
+                                        <td>{{ ticket.user.firstName }} {{ ticket.user.lastName }}</td>
+                                        <td>
+                                            {% if ticket.status.value == 'OPENED' %}
+                                                <span class="badge bg-primary">Ouvert</span>
+                                            {% elseif ticket.status.value == 'IN_PROGRESS' %}
+                                                <span class="badge bg-warning text-dark">En cours</span>
+                                            {% elseif ticket.status.value == 'PENDING' %}
+                                                <span class="badge bg-secondary">En attente</span>
+                                            {% elseif ticket.status.value == 'RESOLVED' %}
+                                                <span class="badge bg-success">Résolu</span>
+                                            {% else %}
+                                                <span class="badge bg-dark">Fermé</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if ticket.affecteA %}
+                                                {{ ticket.affecteA.firstName }} {{ ticket.affecteA.lastName }}
+                                            {% else %}
+                                                <span class="text-muted">Non affecté</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{{ path('app_admin_tickets_show', {'id': ticket.id}) }}" class="btn btn-outline-info" title="Détails" aria-label="Détails">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{{ path('app_admin_tickets_edit', {'id': ticket.id}) }}" class="btn btn-outline-warning" title="Modifier" aria-label="Modifier">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <form method="post" action="{{ path('app_admin_tickets_delete', {'id': ticket.id}) }}" onsubmit="return confirm('Supprimer ce ticket ?');" class="d-inline">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_ticket_' ~ ticket.id) }}">
+                                                    <button type="submit" class="btn btn-outline-danger" title="Supprimer" aria-label="Supprimer">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {% if totalPages > 1 %}
+            <nav class="mt-4" aria-label="Pagination des tickets admin">
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item {{ currentPage == 1 ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ path('app_admin_tickets_index', {'page': currentPage - 1, 'status': selectedStatus, 'createdBy': createdBy, 'dateFrom': dateFrom, 'dateTo': dateTo}) }}">Précédent</a>
+                    </li>
+
+                    {% for page in 1..totalPages %}
+                        <li class="page-item {{ page == currentPage ? 'active' : '' }}">
+                            <a class="page-link" href="{{ path('app_admin_tickets_index', {'page': page, 'status': selectedStatus, 'createdBy': createdBy, 'dateFrom': dateFrom, 'dateTo': dateTo}) }}">{{ page }}</a>
+                        </li>
+                    {% endfor %}
+
+                    <li class="page-item {{ currentPage == totalPages ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ path('app_admin_tickets_index', {'page': currentPage + 1, 'status': selectedStatus, 'createdBy': createdBy, 'dateFrom': dateFrom, 'dateTo': dateTo}) }}">Suivant</a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+{% endblock %}

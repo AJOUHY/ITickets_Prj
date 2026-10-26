@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un utilisateur{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">Modifier un utilisateur</h2>
+                <p class="text-muted mb-0">Mettez à jour ses informations et son mot de passe.</p>
+            </div>
+            <a href="{{ path('app_admin_users_index') }}" class="btn btn-outline-secondary">Retour à la liste</a>
+        </div>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : 'success' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ form_row(form.firstName, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.lastName, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="col-md-12">
+                            {{ form_row(form.email, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="col-md-12">
+                            {{ form_row(form.role, {'attr': {'class': 'form-select'}}) }}
+                        </div>
+                        <div class="col-md-12">
+                            {{ form_row(form.currentPassword, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.newPassword.first, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.newPassword.second, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

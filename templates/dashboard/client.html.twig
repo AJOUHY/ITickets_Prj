@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Client{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">Espace Client</h2>
+                        <p class="text-muted mb-0">Bienvenue, {{ app.user.firstName }} {{ app.user.lastName }}</p>
+                    </div>
+                    <a href="{{ path('app_ticket_new') }}" class="btn btn-primary">+ Nouveau ticket</a>
+                </div>
+
+                <div class="row g-3 mt-2">
+                    <div class="col-md-4">
+                        <div class="dashboard-box">
+                            <i class="bi bi-envelope-paper"></i>
+                            <h5>Mes tickets</h5>
+                            <p>{{ tickets|length }} au total</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="dashboard-box">
+                            <i class="bi bi-clock-history"></i>
+                            <h5>En attente</h5>
+                            <p>{{ tickets|filter(ticket => ticket.status.value == 'PENDING')|length }} demandes</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="dashboard-box">
+                            <i class="bi bi-check-circle"></i>
+                            <h5>Résolus</h5>
+                            <p>{{ tickets|filter(ticket => ticket.status.value == 'RESOLVED')|length }} clôturés</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                    <h3 class="fw-bold mb-0">Liste des tickets</h3>
+                    <form method="get" action="{{ path('app_dashboard_client') }}" class="d-flex gap-2 align-items-center">
+                        <select name="status" class="form-select" onchange="this.form.submit()">
+                            <option value="">Tous les statuts</option>
+                            <option value="OPENED" {% if selectedStatus == 'OPENED' %}selected{% endif %}>Ouvert</option>
+                            <option value="IN_PROGRESS" {% if selectedStatus == 'IN_PROGRESS' %}selected{% endif %}>En cours</option>
+                            <option value="PENDING" {% if selectedStatus == 'PENDING' %}selected{% endif %}>En attente</option>
+                            <option value="RESOLVED" {% if selectedStatus == 'RESOLVED' %}selected{% endif %}>Résolu</option>
+                            <option value="CLOSED" {% if selectedStatus == 'CLOSED' %}selected{% endif %}>Fermé</option>
+                        </select>
+                    </form>
+                </div>
+
+                {% if tickets is empty %}
+                    <div class="alert alert-info mb-0">
+                        Aucun ticket trouvé.
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Type</th>
+                                    <th>Urgence</th>
+                                    <th>Catégorie</th>
+                                    <th>Lieu</th>
+                                    <th>Statut</th>
+                                    <th>Affété à</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ticket in tickets %}
+                                    <tr>
+                                        <td>#{{ ticket.id }}</td>
+                                        <td>
+                                            {% set title = ticket.titre|default('') %}
+                                            {% if title|length > 40 %}
+                                                {{ title|slice(0, 40) ~ '...' }}
+                                            {% else %}
+                                                {{ title }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ ticket.type.value }}</td>
+                                        <td>
+                                            {% set urgence = ticket.urgence.value %}
+                                            {% if urgence == 'basse' %}
+                                                <span class="badge bg-success-subtle text-success-emphasis">{{ urgence }}</span>
+                                            {% elseif urgence == 'moyenne' %}
+                                                <span class="badge bg-info-subtle text-info-emphasis">{{ urgence }}</span>
+                                            {% elseif urgence == 'haute' %}
+                                                <span class="badge bg-warning-subtle text-warning-emphasis">{{ urgence }}</span>
+                                            {% else %}
+                                                <span class="badge bg-danger-subtle text-danger-emphasis">{{ urgence }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ ticket.categorie.titre }}</td>
+                                        <td>{{ ticket.lieu.value }}</td>
+                                        <td>
+                                            <span class="badge bg-primary-subtle text-primary">
+                                                {{ ticket.status.value }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if ticket.affecteA %}
+                                                {{ ticket.affecteA.firstName }} {{ ticket.affecteA.lastName }}
+                                            {% else %}
+                                                <span class="text-muted">Non affecté</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ path('app_ticket_show', {'id': ticket.id}) }}" class="btn btn-sm btn-outline-primary">Détails</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if totalPages > 1 %}
+                        <nav class="mt-4" aria-label="Pagination des tickets">
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item {{ currentPage == 1 ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ path('app_dashboard_client', {'page': currentPage - 1, 'status': selectedStatus}) }}">Précédent</a>
+                                </li>
+
+                                {% for page in 1..totalPages %}
+                                    <li class="page-item {{ page == currentPage ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ path('app_dashboard_client', {'page': page, 'status': selectedStatus}) }}">{{ page }}</a>
+                                    </li>
+                                {% endfor %}
+
+                                <li class="page-item {{ currentPage == totalPages ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ path('app_dashboard_client', {'page': currentPage + 1, 'status': selectedStatus}) }}">Suivant</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,175 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Technicien{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">Espace Technicien</h2>
+                        <p class="text-muted mb-0">Bienvenue, {{ app.user.firstName }} {{ app.user.lastName }}</p>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 bg-warning-subtle">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-warning fw-semibold">En cours</span>
+                                    <i class="bi bi-hourglass-split text-warning"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ stats.IN_PROGRESS ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 bg-secondary-subtle">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-secondary fw-semibold">En attente</span>
+                                    <i class="bi bi-clock-history text-secondary"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ stats.PENDING ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 bg-success-subtle">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-success fw-semibold">Résolus</span>
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ stats.RESOLVED ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm h-100 bg-dark-subtle">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-dark fw-semibold">Fermés</span>
+                                    <i class="bi bi-lock-fill text-dark"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">{{ stats.CLOSED ?? 0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                    <h3 class="fw-bold mb-0">Tickets affectés</h3>
+                </div>
+
+                {% if tickets is empty %}
+                    <div class="alert alert-info mb-0">Aucun ticket affecté.</div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Type</th>
+                                    <th>Urgence</th>
+                                    <th>Catégorie</th>
+                                    <th>Créé par</th>
+                                    <th>Statut</th>
+                                    <th>Affété à</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ticket in tickets %}
+                                    <tr>
+                                        <td>#{{ ticket.id }}</td>
+                                        <td>
+                                            {% set title = ticket.titre|default('') %}
+                                            {% if title|length > 40 %}
+                                                {{ title|slice(0, 40) ~ '...' }}
+                                            {% else %}
+                                                {{ title }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ ticket.type.value }}</td>
+                                        <td>
+                                            {% set urgence = ticket.urgence.value %}
+                                            {% if urgence == 'basse' %}
+                                                <span class="badge bg-success-subtle text-success-emphasis">{{ urgence }}</span>
+                                            {% elseif urgence == 'moyenne' %}
+                                                <span class="badge bg-info-subtle text-info-emphasis">{{ urgence }}</span>
+                                            {% elseif urgence == 'haute' %}
+                                                <span class="badge bg-warning-subtle text-warning-emphasis">{{ urgence }}</span>
+                                            {% else %}
+                                                <span class="badge bg-danger-subtle text-danger-emphasis">{{ urgence }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ ticket.categorie.titre }}</td>
+                                        <td>{{ ticket.user.firstName }} {{ ticket.user.lastName }}</td>
+                                        <td>
+                                            {% if ticket.status.value == 'OPENED' %}
+                                                <span class="badge bg-primary">Ouvert</span>
+                                            {% elseif ticket.status.value == 'IN_PROGRESS' %}
+                                                <span class="badge bg-warning text-dark">En cours</span>
+                                            {% elseif ticket.status.value == 'PENDING' %}
+                                                <span class="badge bg-secondary">En attente</span>
+                                            {% elseif ticket.status.value == 'RESOLVED' %}
+                                                <span class="badge bg-success">Résolu</span>
+                                            {% else %}
+                                                <span class="badge bg-dark">Fermé</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if ticket.affecteA %}
+                                                {{ ticket.affecteA.firstName }} {{ ticket.affecteA.lastName }}
+                                            {% else %}
+                                                <span class="text-muted">Non affecté</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{{ path('app_ticket_show_technicien', {'id': ticket.id}) }}" class="btn btn-outline-info" title="Détails" aria-label="Détails">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{{ path('app_ticket_edit_status', {'id': ticket.id}) }}" class="btn btn-outline-warning" title="Modifier le statut" aria-label="Modifier le statut">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if totalPages > 1 %}
+                        <nav class="mt-4" aria-label="Pagination des tickets technicien">
+                            <ul class="pagination justify-content-center mb-0">
+                                <li class="page-item {{ currentPage == 1 ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ path('app_dashboard_technicien', {'page': currentPage - 1}) }}">Précédent</a>
+                                </li>
+
+                                {% for page in 1..totalPages %}
+                                    <li class="page-item {{ page == currentPage ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ path('app_dashboard_technicien', {'page': page}) }}">{{ page }}</a>
+                                    </li>
+                                {% endfor %}
+
+                                <li class="page-item {{ currentPage == totalPages ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ path('app_dashboard_technicien', {'page': currentPage + 1}) }}">Suivant</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

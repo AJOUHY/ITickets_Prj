@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau ticket{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="fw-bold mb-4">Créer un nouveau ticket</h2>
+
+                        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form_row(form.type, {'attr': {'class': 'form-select'}}) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.categorie, {'attr': {'class': 'form-select'}}) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.urgence, {'attr': {'class': 'form-select'}}) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.lieu, {'attr': {'class': 'form-select'}}) }}
+                                </div>
+                                <div class="col-12">
+                                    {{ form_row(form.titre, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                                <div class="col-12">
+                                    {{ form_row(form.description, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{{ path('app_dashboard_client') }}" class="btn btn-outline-secondary">Retour</a>
+                                <button type="submit" class="btn btn-primary">Créer le ticket</button>
+                            </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
